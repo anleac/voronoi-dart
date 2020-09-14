@@ -1,16 +1,16 @@
 part of voronoi;
 
 class DoublyConnectedEdgeList {
-  static NullFace NULL_FACE = new NullFace();
+  static NullFace NULL_FACE = NullFace();
 
-  List<Vertex> vertices = new List();
-  List<HalfEdge> edges = new List();
-  Map<Vector2, Face> _faces = new Map();
+  List<Vertex> vertices = List();
+  List<HalfEdge> edges = List();
+  Map<Vector2, Face> _faces = Map();
 
   List<Face> get faces => _faces.values.toList();
 
   static DoublyConnectedEdgeList fromRectangle(Rectangle r, Vector2 center) {
-    DoublyConnectedEdgeList d = new DoublyConnectedEdgeList();
+    DoublyConnectedEdgeList d = DoublyConnectedEdgeList();
     HalfEdge top = d.newFullEdge();
     HalfEdge left = d.newFullEdge();
     HalfEdge bottom = d.newFullEdge();
@@ -26,15 +26,19 @@ class DoublyConnectedEdgeList {
     right.twin.next = top.twin;
 
     d.newFaceWithEdge(center, top);
-    Vertex tl = d.newVertex(new Vector2.fromPoint(r.topLeft));
-    Vertex tr = d.newVertex(new Vector2.fromPoint(r.topRight));
-    Vertex bl = d.newVertex(new Vector2.fromPoint(r.bottomLeft));
-    Vertex br = d.newVertex(new Vector2.fromPoint(r.bottomRight));
+    Vertex tl = d.newVertex(Vector2.fromPoint(r.topLeft));
+    Vertex tr = d.newVertex(Vector2.fromPoint(r.topRight));
+    Vertex bl = d.newVertex(Vector2.fromPoint(r.bottomLeft));
+    Vertex br = d.newVertex(Vector2.fromPoint(r.bottomRight));
 
-    top.o = tl; top.twin.o = tr;
-    left.o = bl; left.twin.o = tl;
-    bottom.o = br; bottom.twin.o = bl;
-    right.o = tr; right.twin.o = br;
+    top.o = tl;
+    top.twin.o = tr;
+    left.o = bl;
+    left.twin.o = tl;
+    bottom.o = br;
+    bottom.twin.o = bl;
+    right.o = tr;
+    right.twin.o = br;
     return d;
   }
 
@@ -45,7 +49,7 @@ class DoublyConnectedEdgeList {
   }
 
   Face newFace(Vector2 center) {
-    Face face = new Face(center);
+    Face face = Face(center);
     _faces[center] = face;
     return face;
   }
@@ -57,7 +61,7 @@ class DoublyConnectedEdgeList {
   }
 
   HalfEdge newEdge() {
-    HalfEdge edge = new HalfEdge();
+    HalfEdge edge = HalfEdge();
     edges.add(edge);
     return edge;
   }
@@ -76,7 +80,6 @@ class DoublyConnectedEdgeList {
     return edge;
   }
 
-
   HalfEdge newEdgeForFace(Face face) {
     HalfEdge edge = newEdge();
     face.edge = edge;
@@ -90,7 +93,7 @@ class DoublyConnectedEdgeList {
   }
 
   Vertex newVertex(Vector2 o) {
-    Vertex vert = new Vertex(o);
+    Vertex vert = Vertex(o);
     vertices.add(vert);
     return vert;
   }
@@ -106,8 +109,8 @@ class DoublyConnectedEdgeList {
   }
 
   void bindTo(Rectangle boundingBox) {
-    if(edges.length == 0) {
-      DoublyConnectedEdgeList d = DoublyConnectedEdgeList.fromRectangle(boundingBox, faces.first.center);
+    if (edges.length == 0) {
+      var d = DoublyConnectedEdgeList.fromRectangle(boundingBox, faces.first.center);
       edges = d.edges;
       vertices = d.vertices;
       _faces = d._faces;
@@ -115,8 +118,8 @@ class DoublyConnectedEdgeList {
     }
 
     // trim edges
-    Clipper c = new Clipper(boundingBox);
-    new List.from(edges.where((HalfEdge e) => c.isOutside(e.start, e.end)))..forEach(removeEdge);
+    Clipper c = Clipper(boundingBox);
+    List.from(edges.where((HalfEdge e) => c.isOutside(e.start, e.end))).cast<HalfEdge>().forEach((HalfEdge e) => removeEdge(e));
     vertices.removeWhere((Vertex v) => !boundingBox.containsPoint(v.p.asPoint));
     _clean();
     edges.forEach(c.clip);
@@ -124,7 +127,7 @@ class DoublyConnectedEdgeList {
     // close edges
     HalfEdge start = edges.firstWhere((HalfEdge e) => e.prev == null);
     HalfEdge end = start;
-    HalfEdge prev = null;
+    HalfEdge prev;
     do {
       HalfEdge curr = start;
       // find loose edge
@@ -147,19 +150,20 @@ class DoublyConnectedEdgeList {
         e4.face = NULL_FACE;
         e4.o = start.o;
         curr.next = e1;
-        Vertex cornerVertex = (curr.end.x > start.start.x) ?
-            curr.end.y > start.start.y ?
-                newVertex(new Vector2(curr.end.x, start.start.y)) :
-                newVertex(new Vector2(start.start.x, curr.end.y)) :
-            curr.end.y < start.start.y ?
-                newVertex(new Vector2(curr.end.x, start.start.y)) :
-                newVertex(new Vector2(start.start.x, curr.end.y));
+        Vertex cornerVertex = (curr.end.x > start.start.x)
+            ? curr.end.y > start.start.y
+                ? newVertex(Vector2(curr.end.x, start.start.y))
+                : newVertex(Vector2(start.start.x, curr.end.y))
+            : curr.end.y < start.start.y
+                ? newVertex(Vector2(curr.end.x, start.start.y))
+                : newVertex(Vector2(start.start.x, curr.end.y));
         e2.o = cornerVertex;
         e3.o = cornerVertex;
         e4.next = e2;
         e4.prev = prev;
         prev = e2;
-      } else { // non corner case
+      } else {
+        // non corner case
         e2.o = start.o;
 
         // set pointers between them
@@ -167,7 +171,6 @@ class DoublyConnectedEdgeList {
         e1.next = start;
         e2.prev = prev;
         prev = e2;
-
       }
       start = curr.twin;
     } while (start != end);
@@ -184,7 +187,7 @@ class HalfEdge {
   bool valid = true;
 
   Face get face => _face;
-  void set face(Face f) {
+  set face(Face f) {
     _face = f;
     f._edge = this;
   }
@@ -194,18 +197,18 @@ class HalfEdge {
   HalfEdge get twin => _twin;
 
   HalfEdge get next => _next;
-  void set next(HalfEdge other) {
+  set next(HalfEdge other) {
     this._next = other;
     other?._prev = this;
   }
 
   HalfEdge get prev => _prev;
-  void set prev(HalfEdge other) {
+  set prev(HalfEdge other) {
     this._prev = other;
     other?._next = this;
   }
 
-  void set twin(HalfEdge t) {
+  set twin(HalfEdge t) {
     this._twin = t;
     t._twin = this;
   }
@@ -214,7 +217,7 @@ class HalfEdge {
   // assumes edge is left to right
   bool pointLiesAbove(Vector2 v) {
     double m = (start.y - end.y) / (start.x - end.x);
-    return v.y > m*v.x + start.y - m*start.x;
+    return v.y > m * v.x + start.y - m * start.x;
   }
 }
 
@@ -227,7 +230,7 @@ class Face {
 
   HalfEdge get edge => _edge;
 
-  void set edge(HalfEdge e) {
+  set edge(HalfEdge e) {
     _edge = e;
     e._face = this;
   }
@@ -240,7 +243,7 @@ class Face {
     do {
       curr = curr.next;
       countdown--;
-    } while(curr != null && curr != start && countdown > 0);
+    } while (curr != null && curr != start && countdown > 0);
 
     start = _edge;
     curr = start;
@@ -248,7 +251,7 @@ class Face {
     do {
       curr = curr.prev;
       countdown--;
-    } while(curr != null && curr != start && countdown > 0);
+    } while (curr != null && curr != start && countdown > 0);
     return curr == start;
   }
 

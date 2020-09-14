@@ -1,16 +1,15 @@
 class DLL<T> {
-
   DLLNode first, last;
 
   void add(T value) {
-    DLLNode newNode = new DLLNode(value);
+    DLLNode newNode = DLLNode(value);
 
-    if(first == null) {
+    if (first == null) {
       first = newNode;
     } else {
       DLLNode current = first;
 
-      while(current.hasNext) {
+      while (current.hasNext) {
         current = current.next;
       }
 
@@ -20,10 +19,10 @@ class DLL<T> {
   }
 
   List<T> toList() {
-    List<T> l = new List();
+    List<T> l = List();
 
     DLLNode current = first;
-    while(current != null) {
+    while (current != null) {
       l.add(current.value);
       current = current.next;
     }
@@ -34,7 +33,6 @@ class DLL<T> {
   String toString() {
     return toList().toString();
   }
-
 }
 
 class DLLNode<T> {

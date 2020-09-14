@@ -10,7 +10,6 @@ part "beachLine.dart";
 part "trapezoidalMap.dart";
 
 class Voronoi {
-
   static double Epsilon = 0.0001;
 
   PriorityQueue<VoronoiEvent> _queue;
@@ -29,21 +28,22 @@ class Voronoi {
 
   Rectangle<double> boundingBox;
 
-  Voronoi(List<Vector2> pts, this.boundingBox, {start : true}) {
-    if(pts.length == 0) throw new ArgumentError("Voronoi diagram must contain at least 1 site");
+  Voronoi(List<Vector2> pts, this.boundingBox, {start = true}) {
+    if (pts.length == 0)
+      throw ArgumentError("Voronoi diagram must contain at least 1 site");
 
     // init structures
-    _queue = new PriorityQueue();
-    _beach = new BeachLine();
-    _t = new TrapezoidalMap(boundingBox);
-    _d = new DoublyConnectedEdgeList();
-    _sites = pts.map((Vector2 pt) => new VoronoiSite(pt, _d)).toList();
+    _queue = PriorityQueue();
+    _beach = BeachLine();
+    _t = TrapezoidalMap(boundingBox);
+    _d = DoublyConnectedEdgeList();
+    _sites = pts.map((Vector2 pt) => VoronoiSite(pt, _d)).toList();
 
     // add each point to event queue based on y coord
-    _sites.forEach((VoronoiSite s) => _queue.push(new VoronoiSiteEvent(s)));
+    _sites.forEach((VoronoiSite s) => _queue.push(VoronoiSiteEvent(s)));
 
     // start processing events
-    if(start) generate();
+    if (start) generate();
   }
 
   // uses the trapezoidal map to find the face containing point p in log(n) time
@@ -53,7 +53,7 @@ class Voronoi {
 
   // Processes all events, then clean up and builds the proximity search
   void generate() {
-    while(_queue.isNotEmpty) {
+    while (_queue.isNotEmpty) {
       nextEvent();
     }
     _clean();
@@ -63,12 +63,14 @@ class Voronoi {
   // Cleans up the diagram, adding a bounding box and removing redundant vertices/halfedges
   void _clean() {
     // stretch halfedges still inside box to the outside
-    _beach.tree.internalNodes.forEach((BeachInternalNode node) {
+    _beach.tree.internalNodes
+        .cast<BeachInternalNode>()
+        .forEach((BeachInternalNode node) {
       HalfEdge e = node.edge;
       // add vertices for infinite edges
       Vector2 p = _beach.calculateBreakpoint(node.a, node.b, sweep);
       double ratio = 1.0;
-      while(boundingBox.containsPoint((p * ratio).asPoint)) {
+      while (boundingBox.containsPoint((p * ratio).asPoint)) {
         // extend to outside the box arbitrarily, we will clip it back later
         ratio *= 2;
       }
@@ -80,20 +82,21 @@ class Voronoi {
   }
 
   void nextEvent() {
-    if(_queue.isNotEmpty) {
+    if (_queue.isNotEmpty) {
       _handleEvent(_queue.pop);
     }
   }
 
   void _handleEvent(VoronoiEvent e) {
     sweep = e.y;
-    if(e is VoronoiSiteEvent) _handleSiteEvent(e.s);
-    else if(e is VoronoiCircleEvent) _handleCircleEvent(e);
+    if (e is VoronoiSiteEvent)
+      _handleSiteEvent(e.s);
+    else if (e is VoronoiCircleEvent) _handleCircleEvent(e);
   }
 
   void _handleSiteEvent(VoronoiSite s) {
-    if(_beach.isEmpty) {
-      _beach.tree.root = new BeachLeaf(s);
+    if (_beach.isEmpty) {
+      _beach.tree.root = BeachLeaf(s);
     } else {
       BeachLeaf closest = _beach.findLeaf(s.x, sweep);
 
@@ -101,10 +104,10 @@ class Voronoi {
       _checkFalseAlarm(closest);
 
       // grow the tree
-      BeachInternalNode newTree = new BeachInternalNode();
-      BeachInternalNode newSubTree = new BeachInternalNode();
+      BeachInternalNode newTree = BeachInternalNode();
+      BeachInternalNode newSubTree = BeachInternalNode();
       BeachLeaf leafL = closest.clone();
-      BeachLeaf leafM = new BeachLeaf(s);
+      BeachLeaf leafM = BeachLeaf(s);
       BeachLeaf leafR = closest.clone();
 
       newTree.l = leafL;
@@ -116,9 +119,9 @@ class Voronoi {
       newSubTree.a = s;
       newSubTree.b = closest.site;
 
-      if(closest.parent == null) {
+      if (closest.parent == null) {
         _beach.tree.root = newTree;
-      } else if(closest.parent.l == closest) {
+      } else if (closest.parent.l == closest) {
         closest.parent.l = newTree;
       } else {
         closest.parent.r = newTree;
@@ -139,12 +142,13 @@ class Voronoi {
 
   void _handleCircleEvent(VoronoiCircleEvent e) {
     //check for false alarm
-    if(e.isFalseAlarm) return;
+    if (e.isFalseAlarm) return;
 
     BeachLeaf leaf = e.arc;
     BeachInternalNode oldNode = leaf.parent;
     BeachInternalNode brokenNode = _beach.findInternalNode(e.c.o.x, sweep);
-    bool oldLeftOfBroken = oldNode.isInLeftSubtreeOf(brokenNode); //TODO: can this be done with a numerical comparison?
+    bool oldLeftOfBroken = oldNode.isInLeftSubtreeOf(
+        brokenNode); //TODO: can this be done with a numerical comparison?
 
     // events
     BeachLeaf leafL = leaf.leftLeaf;
@@ -153,7 +157,7 @@ class Voronoi {
     _checkFalseAlarm(leafR);
 
     // remove intersection node
-    if(oldNode.parent.l == oldNode) {
+    if (oldNode.parent.l == oldNode) {
       oldNode.parent.l = leaf.brother;
     } else {
       oldNode.parent.r = leaf.brother;
@@ -168,14 +172,13 @@ class Voronoi {
     HalfEdge edge = _d.newFullEdge();
 
     // connect structure
-    if(oldLeftOfBroken) {
+    if (oldLeftOfBroken) {
       edge.face = brokenNode.edge.face;
       edge.twin.face = oldNode.edge.twin.face;
 
       brokenNode.edge.next = edge;
       edge.twin.next = oldNode.edge.twin;
       oldNode.edge.next = brokenNode.edge.twin;
-
     } else {
       edge.twin.face = brokenNode.edge.twin.face;
       edge.face = oldNode.edge.face;
@@ -200,25 +203,31 @@ class Voronoi {
   }
 
   void _checkFalseAlarm(BeachLeaf leaf) {
-    if(leaf.hasEvent) {
+    if (leaf.hasEvent) {
       leaf.event.isFalseAlarm = true;
     }
   }
 
   void _checkTriple(BeachLeaf a, BeachLeaf b, BeachLeaf c) {
-    if(a == null || b == null || c == null) return;
+    if (a == null || b == null || c == null) return;
 
-    double syden = 2 * ((a.y - b.y)*(b.x - c.x) - (b.y - c.y)*(a.x - b.x));
-    if(syden < 0) { //if the circle converges
+    double syden = 2 * ((a.y - b.y) * (b.x - c.x) - (b.y - c.y) * (a.x - b.x));
+    if (syden < 0) {
+      //if the circle converges
       // calculate intersection
-      double synum = (c.x*c.x + c.y*c.y - b.x*b.x - b.y*b.y)*(a.x - b.x) - (b.x*b.x + b.y*b.y - a.x*a.x - a.y*a.y)*(b.x - c.x);
+      double synum =
+          (c.x * c.x + c.y * c.y - b.x * b.x - b.y * b.y) * (a.x - b.x) -
+              (b.x * b.x + b.y * b.y - a.x * a.x - a.y * a.y) * (b.x - c.x);
       double sy = synum / syden;
-      double sx = ((c.x*c.x + c.y*c.y - b.x*b.x - b.y*b.y)*(a.y - b.y) - (b.x*b.x + b.y*b.y - a.x*a.x - a.y*a.y)*(b.y - c.y)) / -syden;
-      Vector2 o = new Vector2(sx, sy);
+      double sx = ((c.x * c.x + c.y * c.y - b.x * b.x - b.y * b.y) *
+                  (a.y - b.y) -
+              (b.x * b.x + b.y * b.y - a.x * a.x - a.y * a.y) * (b.y - c.y)) /
+          -syden;
+      Vector2 o = Vector2(sx, sy);
 
       // set the new event
-      Circle cir = new Circle(o, (a.pos - o).magnitude);
-      VoronoiCircleEvent e = new VoronoiCircleEvent(cir);
+      Circle cir = Circle(o, (a.pos - o).magnitude);
+      VoronoiCircleEvent e = VoronoiCircleEvent(cir);
       _queue.push(e);
       b.event = e;
       e.arc = b;
@@ -229,7 +238,7 @@ class Voronoi {
 abstract class VoronoiEvent implements Comparable {
   double get y;
 
-  int compareTo(VoronoiEvent other) {
+  int compareTo(dynamic other) {
     return -y.compareTo(other.y);
   }
 }
@@ -270,5 +279,9 @@ class VoronoiSite {
     this.face = d.newFace(this.pos);
   }
 
-  bool operator ==(Object other) => other is VoronoiSite && other.x == this.x && other.y == this.y;
+  bool operator ==(Object other) =>
+      other is VoronoiSite && other.x == this.x && other.y == this.y;
+
+  @override
+  int get hashCode => x.hashCode ^ y.hashCode;
 }
