@@ -8,11 +8,11 @@ class PoissonDiskSampler extends Sampler {
     rng = rng;
   }
 
-  PoissonDiskSampler(Rectangle r) : super(r) {
+  PoissonDiskSampler(Rect r) : super(r) {
     us = UniformSampler.withRng(r, _rng);
   }
 
-  PoissonDiskSampler.withRng(Rectangle r, Random rng) : super.withRng(r, rng) {
+  PoissonDiskSampler.withRng(Rect r, Random rng) : super.withRng(r, rng) {
     us = UniformSampler.withRng(r, rng);
   }
 

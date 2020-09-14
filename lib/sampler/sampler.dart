@@ -1,5 +1,6 @@
 library sampler;
 
+import 'package:flutter/material.dart';
 import 'package:voronoi/geometry/geometry.dart';
 import 'dart:math';
 
@@ -9,7 +10,7 @@ part "jitteredGridSampler.dart";
 
 abstract class Sampler {
   Random _rng;
-  Rectangle _rect;
+  Rect _rect;
 
   Sampler(this._rect) {
     _rng = Random();

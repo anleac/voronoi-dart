@@ -1,8 +1,8 @@
 part of sampler;
 
 class UniformSampler extends Sampler {
-  UniformSampler(Rectangle r) : super(r);
-  UniformSampler.withRng(Rectangle r, Random rng) : super.withRng(r, rng);
+  UniformSampler(Rect r) : super(r);
+  UniformSampler.withRng(Rect r, Random rng) : super.withRng(r, rng);
 
   Vector2 generatePoint() {
     return Vector2(_rect.left + _rng.nextDouble() * _rect.width,
@@ -21,7 +21,7 @@ class UniformSampler extends Sampler {
     double angle = _rng.nextDouble() * 2 * pi;
     double length = _rng.nextDouble() * r + r;
     Vector2 p = Vector2(o.x + length * sin(angle), o.y + length * cos(angle));
-    if (_rect.containsPoint(p.asPoint))
+    if (_rect.contains(Offset(p.x, p.y)))
       return p;
     else
       return generateAnnulusPoint(o, r);

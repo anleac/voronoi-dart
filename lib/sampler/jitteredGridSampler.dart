@@ -1,7 +1,7 @@
 part of sampler;
 
 class JitteredGridSampler extends Sampler {
-  JitteredGridSampler(Rectangle r) : super(r);
+  JitteredGridSampler(Rect r) : super(r);
 
   List<Vector2> generatePoints(int numPoints) {
     List<Vector2> ps = List();
@@ -17,8 +17,7 @@ class JitteredGridSampler extends Sampler {
     for (int i = 0; i < boxRows; i++) {
       for (int j = 0; j < boxCols; j++) {
         UniformSampler s = UniformSampler.withRng(
-            Rectangle(_rect.left + j * boxSize, _rect.top + i * boxSize,
-                boxSize, boxSize),
+            Rect.fromLTWH(_rect.left + j * boxSize, _rect.top + i * boxSize, boxSize, boxSize),
             _rng);
         ps.add(s.generatePoint());
       }
