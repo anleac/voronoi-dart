@@ -48,7 +48,8 @@ class LeafedTree<S extends TreeInternalNode, T extends TreeLeaf> {
         return _findInternalNode(node.r, x, comparator);
       }
     }
-    throw Exception("No internal node with x=$x found");
+
+    // throw Exception("No internal node with x=$x found");
   }
 
   void clear() {
@@ -134,9 +135,9 @@ class TreeInternalNode extends TreeNode {
 
   bool isInLeftSubtreeOf(TreeInternalNode root) {
     if (parent == root) {
-      return parent.l == this;
+      return parent == null ? false : parent.l == this;
     } else {
-      return parent.isInLeftSubtreeOf(root);
+      return parent == null ? false : parent.isInLeftSubtreeOf(root);
     }
   }
 }

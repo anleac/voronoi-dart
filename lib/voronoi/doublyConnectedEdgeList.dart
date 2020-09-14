@@ -223,7 +223,7 @@ class HalfEdge {
 
 class Face {
   // assume faces with more edges than this are infinite
-  static int _EDGE_SIZE_LIMIT = 100;
+  static int _EDGE_SIZE_LIMIT = 200;
 
   Vector2 center;
   HalfEdge _edge;

@@ -10,7 +10,7 @@ part "beachLine.dart";
 part "trapezoidalMap.dart";
 
 class Voronoi {
-  static double Epsilon = 0.0001;
+  static double Epsilon = 0.001;
 
   PriorityQueue<VoronoiEvent> _queue;
   BeachLine _beach;

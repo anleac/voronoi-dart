@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:voronoi/sampler/sampler.dart';
 import 'package:voronoi/voronoi/voronoi.dart';
 import 'package:voronoi/geometry/geometry.dart';
 import 'dart:math';
@@ -114,4 +115,23 @@ main() {
           throwsArgumentError);
     });
   });
+
+  /*group("Performance", () {
+    test("Perf under 10s", () {
+      final stopwatch = Stopwatch()..start();
+
+      var area = Rectangle(0.0, 0.0, 5000.0, 5000.0);
+      var sampler = new PoissonDiskSampler(area);
+      var numPoints = 1000;
+      var attempts = 50;
+
+      for (int i = 0; i < attempts; i++) {
+        var v = Voronoi(sampler.generatePoints(numPoints), area);
+      }
+
+      var elapsedMs = stopwatch.elapsedMilliseconds;
+      var timePerLoop = elapsedMs / attempts;
+      int i = 0;
+    });
+  });*/
 }
