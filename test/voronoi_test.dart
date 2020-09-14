@@ -1,8 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:voronoi/sampler/sampler.dart';
 import 'package:voronoi/voronoi/voronoi.dart';
 import 'package:voronoi/geometry/geometry.dart';
-import 'dart:math';
 
 main() {
   group("Structure", () {
@@ -15,7 +15,7 @@ main() {
         Vector2(153.0, 321.0)
       ];
 
-      var v = Voronoi(pts, Rectangle(0.0, 0.0, 500.0, 500.0));
+      var v = Voronoi(pts, Rect.fromLTWH(0.0, 0.0, 500.0, 500.0));
       expect(v.faces.length, equals(pts.length));
     });
 
@@ -27,7 +27,7 @@ main() {
         Vector2(85.0, 287.0),
         Vector2(153.0, 321.0)
       ];
-      var v = Voronoi(pts, Rectangle(0.0, 0.0, 500.0, 500.0));
+      var v = Voronoi(pts, Rect.fromLTWH(0.0, 0.0, 500.0, 500.0));
       v.faces.forEach((Face f) {
         expect(f.edge, isNotNull);
       });
@@ -43,7 +43,7 @@ main() {
         Vector2(153.0, 321.0)
       ];
 
-      var v = Voronoi(pts, Rectangle(0.0, 0.0, 500.0, 500.0));
+      var v = Voronoi(pts, Rect.fromLTWH(0.0, 0.0, 500.0, 500.0));
       v.edges.forEach((HalfEdge e) {
         HalfEdge next = e.next;
         while (next != null && next != e) {
@@ -67,7 +67,7 @@ main() {
         Vector2(85.0, 287.0),
         Vector2(153.0, 321.0)
       ];
-      Voronoi v = Voronoi(pts, Rectangle(0.0, 0.0, 500.0, 500.0));
+      Voronoi v = Voronoi(pts, Rect.fromLTWH(0.0, 0.0, 500.0, 500.0));
       v.edges.forEach((HalfEdge e) {
         expect(e.face, isNotNull);
       });
@@ -84,7 +84,7 @@ main() {
         Vector2(85.0, 287.0),
         Vector2(153.0, 321.0)
       ];
-      Voronoi v = Voronoi(pts, Rectangle(0.0, 0.0, 500.0, 500.0));
+      Voronoi v = Voronoi(pts, Rect.fromLTWH(0.0, 0.0, 500.0, 500.0));
       v.faces.forEach((Face f) {
         HalfEdge start = f.edge;
         HalfEdge curr = start;
@@ -98,20 +98,20 @@ main() {
 
   group("Edge cases", () {
     test("No input points throws an error", () {
-      expect(() => Voronoi([], Rectangle(0.0, 0.0, 200.0, 200.0)),
+      expect(() => Voronoi([], Rect.fromLTWH(0.0, 0.0, 200.0, 200.0)),
           throwsArgumentError);
     });
 
     test("A single point produces one face", () {
       var pts = [Vector2(100.0, 100.0)];
-      Voronoi v = Voronoi(pts, Rectangle(0.0, 0.0, 200.0, 200.0));
+      Voronoi v = Voronoi(pts, Rect.fromLTWH(0.0, 0.0, 200.0, 200.0));
       expect(v.faces.length, equals(1));
     });
   });
 
   group("Error checking", () {
     test("Creating diagram with no input sites throws an error", () {
-      expect(() => Voronoi([], Rectangle(0.0, 0.0, 500.0, 500.0)),
+      expect(() => Voronoi([], Rect.fromLTWH(0.0, 0.0, 500.0, 500.0)),
           throwsArgumentError);
     });
   });

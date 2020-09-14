@@ -1,6 +1,7 @@
 library voronoi;
 
 import "dart:math";
+import 'dart:ui';
 import "package:voronoi/structs/priorityQueue.dart";
 import "package:voronoi/geometry/geometry.dart";
 import 'package:voronoi/structs/leafedTree.dart';
@@ -28,7 +29,9 @@ class Voronoi {
 
   Rectangle<double> boundingBox;
 
-  Voronoi(List<Vector2> pts, this.boundingBox, {start = true}) {
+  Voronoi(List<Vector2> pts, Rect rect, {start = true}) {
+    boundingBox = Rectangle(rect.left, rect.top, rect.width, rect.height);
+
     if (pts.length == 0)
       throw ArgumentError("Voronoi diagram must contain at least 1 site");
 
