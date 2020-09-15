@@ -8,8 +8,7 @@ class BeachLine {
 
   // Finds all breakpoints on the beach line when the sweep line is in position [y]
   List<Vector2> getBreakpoints(double y) {
-    return _tree.internalNodes
-        .map((BeachInternalNode n) => calculateBreakpoint(n.a, n.b, y));
+    return _tree.internalNodes.map((BeachInternalNode n) => calculateBreakpoint(n.a, n.b, y)).toList();
   }
 
   // Finds the leaf associated with site that has x coordinate [x], when the sweepline is at [y]

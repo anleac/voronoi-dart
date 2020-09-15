@@ -21,7 +21,7 @@ class Voronoi {
   List<VoronoiSite> _sites;
   double sweep = 0.0;
 
-  List<Vector2> get sites => _sites.map((VoronoiSite s) => s.pos);
+  List<Vector2> get sites => _sites.map((VoronoiSite s) => s.pos).toList();
   List<Vector2> get vertices => _d.vertices.map((Vertex v) => v.p).toList();
   List<HalfEdge> get edges => _d.edges;
   List<Face> get faces => _d.faces;
