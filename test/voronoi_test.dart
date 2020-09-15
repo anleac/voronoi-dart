@@ -109,6 +109,24 @@ main() {
     });
   });
 
+
+  group("Getters", () {
+    test("Able to get sites", () {
+      var pts = [Vector2(100.0, 100.0)];
+      Voronoi v = Voronoi(pts, Rect.fromLTWH(0.0, 0.0, 200.0, 200.0));
+      expect(v.faces.length, equals(1));
+      expect(v.sites.length, equals(1));
+      expect(v.sites.first, equals(pts.first));
+    });
+
+    test("Able to get vertices", () {
+      var pts = [Vector2(100.0, 100.0)];
+      Voronoi v = Voronoi(pts, Rect.fromLTWH(0.0, 0.0, 200.0, 200.0));
+      expect(v.faces.length, equals(1));
+      expect(v.vertices.length, equals(4));
+    });
+  });
+
   group("Error checking", () {
     test("Creating diagram with no input sites throws an error", () {
       expect(() => Voronoi([], Rect.fromLTWH(0.0, 0.0, 500.0, 500.0)),

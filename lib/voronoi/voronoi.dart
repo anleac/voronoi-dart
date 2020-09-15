@@ -8,20 +8,18 @@ import 'package:voronoi/structs/leafedTree.dart';
 
 part "doublyConnectedEdgeList.dart";
 part "beachLine.dart";
-part "trapezoidalMap.dart";
 
 class Voronoi {
-  static double Epsilon = 0.001;
+  static double epsilon = 0.0001;
 
   PriorityQueue<VoronoiEvent> _queue;
   BeachLine _beach;
   DoublyConnectedEdgeList _d;
-  TrapezoidalMap _t;
 
   List<VoronoiSite> _sites;
   double sweep = 0.0;
 
-  List<Vector2> get sites => _sites.map((VoronoiSite s) => s.pos);
+  List<Vector2> get sites => _sites.map((VoronoiSite s) => s.pos).toList();
   List<Vector2> get vertices => _d.vertices.map((Vertex v) => v.p).toList();
   List<HalfEdge> get edges => _d.edges;
   List<Face> get faces => _d.faces;
@@ -38,7 +36,6 @@ class Voronoi {
     // init structures
     _queue = PriorityQueue();
     _beach = BeachLine();
-    _t = TrapezoidalMap(boundingBox);
     _d = DoublyConnectedEdgeList();
     _sites = pts.map((Vector2 pt) => VoronoiSite(pt, _d)).toList();
 
@@ -49,18 +46,12 @@ class Voronoi {
     if (start) generate();
   }
 
-  // uses the trapezoidal map to find the face containing point p in log(n) time
-  Face getFaceContainingPoint(Vector2 p) {
-    return _t.search(p);
-  }
-
   // Processes all events, then clean up and builds the proximity search
   void generate() {
     while (_queue.isNotEmpty) {
       nextEvent();
     }
     _clean();
-    //_t.addAll(_d.edges); // build trapezoidal map
   }
 
   // Cleans up the diagram, adding a bounding box and removing redundant vertices/halfedges
@@ -150,8 +141,9 @@ class Voronoi {
     BeachLeaf leaf = e.arc;
     BeachInternalNode oldNode = leaf.parent;
     BeachInternalNode brokenNode = _beach.findInternalNode(e.c.o.x, sweep);
-    bool oldLeftOfBroken = oldNode.isInLeftSubtreeOf(
-        brokenNode); //TODO: can this be done with a numerical comparison?
+
+    // TODO: can this be done with a numerical comparison?
+    bool oldLeftOfBroken = oldNode.isInLeftSubtreeOf(brokenNode);
 
     // events
     BeachLeaf leafL = leaf.leftLeaf;
