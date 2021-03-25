@@ -1,1 +1,1 @@
-Contributing file.
+Contributing file. V2
