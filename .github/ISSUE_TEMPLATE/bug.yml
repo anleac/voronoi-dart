@@ -1,4 +1,4 @@
- attributes:
+  attributes:
       value: |
         Thanks for taking the time to fill out this privacy review for your product / feature / offering. Please answer all questions in this section to the best of your ability. Questions? Ping us in the #privacy Slack channel or DM @j3nnie for clarification. Need help filling out the issue template? Drop into our weekly [privacy office hour](https://www.google.com/url?q=https://github.zoom.us/j/91962992768?pwd%3DM2JqSHNPOUl0THVNcFhXOEt3TWNydz09&sa=D&source=calendar&ust=1635777201401213&usg=AOvVaw3L-euVBr_FFpWMPVAe93Ag) Thursdays from 8:30am PST-9:30am PST. 
   - type: checkboxes
